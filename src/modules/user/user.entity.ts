@@ -2,6 +2,7 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 
 import * as bcrypt from 'bcrypt';
 import { IsEmail } from 'class-validator';
+import { RoleType } from 'src/common/constants/role-type';
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -33,6 +34,9 @@ export class User {
   @Column({ unique: true })
   email: string;
 
+  @Column({ type: 'enum', enum: RoleType, default: RoleType.USER })
+  role!: RoleType;
+
   @Field(() => Date)
   @CreateDateColumn({
     type: 'timestamp with time zone',
@@ -44,10 +48,6 @@ export class User {
     type: 'timestamp with time zone',
   })
   updatedAt: Date;
-
-  @Field(() => String, { nullable: true })
-  @Column({ nullable: true })
-  refreshToken?: string;
 
   @BeforeInsert()
   @BeforeUpdate()

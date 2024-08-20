@@ -18,9 +18,20 @@ type GetUserType {
   data: [User!]
 }
 
+type LoginOutput {
+  token: String
+  user: User
+}
+
+input LoginUserInput {
+  password: String!
+  username: String!
+}
+
 type Mutation {
   createUser(createUserData: CreateUserInput!): User!
   deleteUser(id: String!): Boolean!
+  login(loginUserInput: LoginUserInput!): LoginOutput!
   updateUser(id: String!, updateUserData: UpdateUserInput!): User!
 }
 
@@ -37,7 +48,6 @@ type User {
   createdAt: DateTime!
   email: String!
   id: ID!
-  refreshToken: String
   updatedAt: DateTime!
   username: String!
 }
