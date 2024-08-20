@@ -3,9 +3,8 @@
 # ------------------------------------------------------
 
 input CreateUserInput {
-  nickname: String!
+  email: String!
   password: String!
-  refreshToken: String
   username: String!
 }
 
@@ -14,29 +13,30 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type GetUserType {
+  count: Float
+  data: [User!]
+}
+
 type Mutation {
   createUser(createUserData: CreateUserInput!): User!
-  deleteRecipe(id: String!): Boolean!
-  updateRecipe(id: String!, updateUserData: UpdateUserInput!): User!
+  deleteUser(id: String!): Boolean!
+  updateUser(id: String!, updateUserData: UpdateUserInput!): User!
 }
 
 type Query {
-  getManyUserList: [User!]!
+  getUserList: GetUserType!
   user(id: String!): User
 }
 
 input UpdateUserInput {
-  nickname: String
   password: String
-  refreshToken: String
-  role: String
-  username: String
 }
 
 type User {
   createdAt: DateTime!
+  email: String!
   id: ID!
-  nickname: String!
   refreshToken: String
   updatedAt: DateTime!
   username: String!

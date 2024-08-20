@@ -23,15 +23,15 @@ export class User {
 
   @Field(() => String)
   @IsEmail()
-  @Column()
+  @Column({ unique: true })
   username: string;
 
   @Column({ nullable: true })
   password: string;
 
   @Field(() => String)
-  @Column()
-  nickname: string;
+  @Column({ unique: true })
+  email: string;
 
   @Field(() => Date)
   @CreateDateColumn({
