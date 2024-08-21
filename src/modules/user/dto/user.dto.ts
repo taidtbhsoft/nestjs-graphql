@@ -8,7 +8,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { User } from '../user.entity';
-import { RoleType } from 'src/common/constants/role-type';
+import { RoleType } from '../../../common/constants/role-type';
 
 @InputType()
 export class CreateUserInput implements Partial<User> {

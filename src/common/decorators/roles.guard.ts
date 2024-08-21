@@ -9,7 +9,7 @@ import { RoleType } from '../constants/role-type';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
-import { UserService } from 'src/modules/user/user.service';
+import { UserService } from '@modules/user/user.service';
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(

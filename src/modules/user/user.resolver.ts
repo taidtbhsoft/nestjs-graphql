@@ -3,8 +3,8 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GetUserType, User } from './user.entity';
 import { UserService } from './user.service';
 import { CreateUserInput, UpdateUserInput } from './dto/user.dto';
-import { AuthUser, Roles } from 'src/common/decorators/roles.decorators';
-import { RoleType } from 'src/common/constants/role-type';
+import { AuthUser, Roles } from '../../common/decorators/roles.decorators';
+import { RoleType } from '../../common/constants/role-type';
 import { MethodNotAllowedException } from '@nestjs/common';
 
 @Resolver()
@@ -13,9 +13,7 @@ export class UserResolver {
 
   @Roles([])
   @Query(() => GetUserType)
-  getUserList(@AuthUser() user: User) {
-    // Current user
-    console.log({ user });
+  getUserList() {
     return this.userService.findAll();
   }
   @Query(() => User, { nullable: true })

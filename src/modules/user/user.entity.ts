@@ -2,7 +2,7 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 
 import * as bcrypt from 'bcrypt';
 import { IsEmail } from 'class-validator';
-import { RoleType } from 'src/common/constants/role-type';
+import { RoleType } from '@common/constants/role-type';
 import {
   BeforeInsert,
   BeforeUpdate,
