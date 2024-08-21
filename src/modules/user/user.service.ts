@@ -35,7 +35,7 @@ export class UserService {
       const user = this.userRepository.create(input);
       return await this.userRepository.save(user);
     } catch (error) {
-      if (error.constraint.startsWith('UQ_')) {
+      if (error?.constraint?.startsWith('UQ_')) {
         throw new BadRequestException(
           'Check duplicate key value : ' + error.detail,
         );

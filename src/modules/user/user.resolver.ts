@@ -40,6 +40,11 @@ export class UserResolver {
         `You can not update user with id: ${id}`,
       );
     }
+    if (user.role !== RoleType.ADMIN && updateUserData.role) {
+      throw new MethodNotAllowedException(
+        `You can not update role for user with id: ${id}`,
+      );
+    }
     return this.userService.update(id, updateUserData);
   }
 

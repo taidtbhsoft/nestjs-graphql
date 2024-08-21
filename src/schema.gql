@@ -40,8 +40,14 @@ type Query {
   user(id: String!): User
 }
 
+enum RoleType {
+  ADMIN
+  USER
+}
+
 input UpdateUserInput {
   password: String
+  role: RoleType! = USER
 }
 
 type User {
