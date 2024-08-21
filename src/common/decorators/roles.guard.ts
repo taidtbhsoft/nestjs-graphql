@@ -1,4 +1,10 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+  MethodNotAllowedException,
+} from '@nestjs/common';
 import { RoleType } from '../constants/role-type';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
@@ -15,7 +21,7 @@ export class RolesGuard implements CanActivate {
     const ctx = GqlExecutionContext.create(context);
     const { authorization = '' } = ctx.getContext().req.headers || {};
     if (!authorization) {
-      return false;
+      throw new UnauthorizedException();
     }
     const requiredRoles = this.getMetadata<RoleType[]>('roles', context);
     const jwtService = new JwtService({
@@ -26,13 +32,18 @@ export class RolesGuard implements CanActivate {
     });
     const token = authorization.split(' ')[1];
     const decode = jwtService.decode(token);
+    if (!decode) {
+      throw new UnauthorizedException();
+    }
     const user = await this.usersService.findOne(decode.id);
     ctx.getContext().req.user = user;
     if (!requiredRoles?.length) {
       return true;
     }
-
-    return requiredRoles.includes(user.role);
+    if (requiredRoles.includes(user.role)) {
+      throw new MethodNotAllowedException();
+    }
+    return true;
   }
   private getMetadata<T>(key: string, context: ExecutionContext): T {
     return this.reflector.getAllAndOverride<T>(key, [

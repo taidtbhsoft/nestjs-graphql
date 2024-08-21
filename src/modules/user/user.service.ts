@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { Repository } from 'typeorm';
 import { GetUserType, User } from './user.entity';
@@ -25,10 +30,18 @@ export class UserService {
     return this.userRepository.findOneBy({ username });
   }
 
-  create(input: CreateUserInput): Promise<User> {
-    const user = this.userRepository.create(input);
-
-    return this.userRepository.save(user);
+  async create(input: CreateUserInput): Promise<User> {
+    try {
+      const user = this.userRepository.create(input);
+      return await this.userRepository.save(user);
+    } catch (error) {
+      if (error.constraint.startsWith('UQ_')) {
+        throw new BadRequestException(
+          'Check duplicate key value : ' + error.detail,
+        );
+      }
+      throw new InternalServerErrorException();
+    }
   }
 
   async update(id: string, input: UpdateUserInput): Promise<User> {

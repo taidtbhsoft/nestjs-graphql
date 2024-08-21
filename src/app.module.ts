@@ -8,6 +8,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './modules/user/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
+import { GraphQLError } from 'graphql';
+import { setHttpPlugin } from './common/utils/graphql.helper';
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -16,6 +19,18 @@ import { AuthModule } from './modules/auth/auth.module';
       playground: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
+      autoTransformHttpErrors: true,
+      formatError: (error: GraphQLError) => {
+        return {
+          message:
+            error?.extensions?.originalError?.['message'] ||
+            error.message ||
+            '',
+          path: error.path,
+          statusCode: error?.extensions?.originalError?.['statusCode'] || 400,
+        };
+      },
+      plugins: [setHttpPlugin],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
