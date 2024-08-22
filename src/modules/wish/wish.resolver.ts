@@ -28,16 +28,24 @@ export class WishResolver {
   }
 
   @Mutation(() => Wish)
-  updateWish(
+  async updateWish(
     @Args('id') id: string,
     @Args('updateWishData') updateWishData: CreateWishInput,
   ) {
-    return this.wishService.update(id, updateWishData);
+    const wish = await this.wishService.update(id, updateWishData);
+    pubSub.publish('wishUpdated', {
+      wishUpdated: wish,
+    });
+    return wish;
   }
 
   @Mutation(() => Boolean)
-  deleteWish(@Args('id', { type: () => String }) id: string) {
-    return this.wishService.delete(id).then(() => true);
+  async deleteWish(@Args('id', { type: () => String }) id: string) {
+    await this.wishService.delete(id).then(() => true);
+    pubSub.publish('wishDeleted', {
+      wishDeleted: id,
+    });
+    return true;
   }
 
   @Subscription(() => Wish, {
@@ -45,5 +53,19 @@ export class WishResolver {
   })
   wishAdded() {
     return pubSub.asyncIterator('wishAdded');
+  }
+
+  @Subscription(() => Wish, {
+    name: 'wishUpdated',
+  })
+  wishUpdated() {
+    return pubSub.asyncIterator('wishUpdated');
+  }
+
+  @Subscription(() => String, {
+    name: 'wishDeleted',
+  })
+  wishDeleted() {
+    return pubSub.asyncIterator('wishDeleted');
   }
 }

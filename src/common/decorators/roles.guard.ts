@@ -4,44 +4,32 @@ import {
   ExecutionContext,
   UnauthorizedException,
   MethodNotAllowedException,
+  Inject,
 } from '@nestjs/common';
 import { RoleType } from '../constants/role-type';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
-import { UserService } from '@modules/user/user.service';
+import { AuthService } from '@src/modules/auth/auth.service';
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(
+    @Inject(AuthService) private authService: AuthService,
     private readonly reflector: Reflector,
-    private usersService: UserService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const ctx = GqlExecutionContext.create(context);
-    const { authorization = '' } = ctx.getContext().req.headers || {};
+    const { authorization = '' } =
+      ctx.getContext().req.headers || // For Graphql
+      ctx.getContext().req?.extra?.request?.headers || // For Subscription/webSocket Graphql
+      {};
     if (!authorization) {
       throw new UnauthorizedException();
     }
     const requiredRoles = this.getMetadata<RoleType[]>('roles', context);
-    const jwtService = new JwtService({
-      secret: process.env.JWT_SECRET,
-      signOptions: {
-        expiresIn: '2h',
-      },
-    });
+
     const token = authorization.split(' ')[1];
-    const decode = jwtService.decode(token);
-    if (!decode) {
-      throw new UnauthorizedException();
-    }
-    if (Date.now() >= decode.exp * 1000) {
-      throw new UnauthorizedException();
-    }
-    const user = await this.usersService.findOne(decode.id);
-    if (!user) {
-      throw new UnauthorizedException();
-    }
+    const user = await this.authService.verifyToken(token);
     ctx.getContext().req.user = user;
     if (!requiredRoles?.length) {
       return true;

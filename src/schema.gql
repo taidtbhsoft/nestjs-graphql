@@ -69,6 +69,8 @@ enum RoleType {
 
 type Subscription {
   wishAdded: Wish!
+  wishDeleted: String!
+  wishUpdated: Wish!
 }
 
 input UpdateUserInput {

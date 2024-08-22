@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from '@modules/user/user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -33,5 +34,20 @@ export class AuthService {
 
   async register(registerUserInput: RegisterUserInput): Promise<User> {
     return await this.usersService.create(registerUserInput);
+  }
+
+  async verifyToken(token: string): Promise<User> {
+    const decode = this.jwtService.decode(token);
+    if (!decode) {
+      throw new UnauthorizedException('Token invalid');
+    }
+    if (Date.now() >= decode.exp * 1000) {
+      throw new UnauthorizedException('Token expired');
+    }
+    const user = await this.usersService.findOne(decode.id);
+    if (!user) {
+      throw new UnauthorizedException('Not found user');
+    }
+    return user;
   }
 }
