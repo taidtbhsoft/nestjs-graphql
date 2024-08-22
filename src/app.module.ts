@@ -10,6 +10,7 @@ import { AuthModule } from '@modules/auth/auth.module';
 import { GraphQLError } from 'graphql';
 import { setHttpPlugin } from '@common/utils/graphql.helper';
 import { initDB } from '@common/config/database.config';
+import { WishModule } from '@modules/wish/wish.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { initDB } from '@common/config/database.config';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       autoTransformHttpErrors: true,
+      installSubscriptionHandlers: true, // Add subscription
       formatError: (error: GraphQLError) => {
         return {
           message:
@@ -31,10 +33,14 @@ import { initDB } from '@common/config/database.config';
         };
       },
       plugins: [setHttpPlugin],
+      subscriptions: {
+        'graphql-ws': true, // this enables graphql subscriptions
+      },
     }),
     ...initDB,
     UserModule,
     AuthModule,
+    WishModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -9,6 +9,10 @@ input CreateUserInput {
   username: String!
 }
 
+input CreateWishInput {
+  content: String!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -17,6 +21,11 @@ scalar DateTime
 type GetUserType {
   count: Float
   data: [User!]
+}
+
+type GetWishType {
+  count: Float
+  data: [Wish!]
 }
 
 type LoginOutput {
@@ -31,15 +40,20 @@ input LoginUserInput {
 
 type Mutation {
   createUser(createUserData: CreateUserInput!): User!
+  createWish(createWishData: CreateWishInput!): Wish!
   deleteUser(id: String!): Boolean!
+  deleteWish(id: String!): Boolean!
   login(loginUserInput: LoginUserInput!): LoginOutput!
   register(registerUserInput: RegisterUserInput!): User!
   updateUser(id: String!, updateUserData: UpdateUserInput!): User!
+  updateWish(id: String!, updateWishData: CreateWishInput!): Wish!
 }
 
 type Query {
   getUserList: GetUserType!
+  getWishList: GetWishType!
   user(id: String!): User
+  wish(id: String!): Wish
 }
 
 input RegisterUserInput {
@@ -53,6 +67,10 @@ enum RoleType {
   USER
 }
 
+type Subscription {
+  wishAdded: Wish!
+}
+
 input UpdateUserInput {
   password: String
   role: RoleType! = USER
@@ -64,4 +82,11 @@ type User {
   id: ID!
   updatedAt: DateTime!
   username: String!
+}
+
+type Wish {
+  content: String!
+  createdAt: DateTime!
+  id: ID!
+  updatedAt: DateTime!
 }
