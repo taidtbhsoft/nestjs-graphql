@@ -5,6 +5,7 @@
 input CreateUserInput {
   email: String!
   password: String!
+  role: RoleType! = USER
   username: String!
 }
 
@@ -32,12 +33,19 @@ type Mutation {
   createUser(createUserData: CreateUserInput!): User!
   deleteUser(id: String!): Boolean!
   login(loginUserInput: LoginUserInput!): LoginOutput!
+  register(registerUserInput: RegisterUserInput!): User!
   updateUser(id: String!, updateUserData: UpdateUserInput!): User!
 }
 
 type Query {
   getUserList: GetUserType!
   user(id: String!): User
+}
+
+input RegisterUserInput {
+  email: String!
+  password: String!
+  username: String!
 }
 
 enum RoleType {

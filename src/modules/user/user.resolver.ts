@@ -21,6 +21,7 @@ export class UserResolver {
     return this.userService.findOne(id);
   }
 
+  @Roles([RoleType.ADMIN])
   @Mutation(() => User)
   createUser(@Args('createUserData') createUserData: CreateUserInput) {
     return this.userService.create(createUserData);

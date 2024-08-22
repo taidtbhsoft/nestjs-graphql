@@ -23,7 +23,6 @@ export class User {
   id: string;
 
   @Field(() => String)
-  @IsEmail()
   @Column({ unique: true })
   username: string;
 
@@ -31,6 +30,7 @@ export class User {
   password: string;
 
   @Field(() => String)
+  @IsEmail()
   @Column({ unique: true })
   email: string;
 

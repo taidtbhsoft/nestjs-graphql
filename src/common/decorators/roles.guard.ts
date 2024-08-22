@@ -35,7 +35,13 @@ export class RolesGuard implements CanActivate {
     if (!decode) {
       throw new UnauthorizedException();
     }
+    if (Date.now() >= decode.exp * 1000) {
+      throw new UnauthorizedException();
+    }
     const user = await this.usersService.findOne(decode.id);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
     ctx.getContext().req.user = user;
     if (!requiredRoles?.length) {
       return true;

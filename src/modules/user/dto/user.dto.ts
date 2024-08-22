@@ -19,13 +19,17 @@ export class CreateUserInput implements Partial<User> {
   @Field(() => String)
   @IsNotEmpty()
   @IsString()
-  @MinLength(6)
+  @MinLength(6, { message: 'Password must be at least 6 characters long.' })
   password: string;
 
   @Field(() => String)
   @IsNotEmpty()
   @IsEmail()
   email: string;
+
+  @Field(() => RoleType, { defaultValue: RoleType.USER })
+  @IsOptional()
+  role?: RoleType;
 }
 
 @InputType()
