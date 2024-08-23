@@ -4,34 +4,55 @@ import { GetWishType, Wish } from './wish.entity';
 import { WishService } from './wish.service';
 import { CreateWishInput } from './dto/wish.dto';
 import { PubSub } from 'graphql-subscriptions';
+import { AuthUser, Roles } from '@src/common/decorators/roles.decorators';
+import { User } from '@modules/user/user.entity';
+import { RoleType } from '@src/common/constants/role-type';
+import { MethodNotAllowedException } from '@nestjs/common';
 const pubSub = new PubSub();
 @Resolver()
 export class WishResolver {
   constructor(private readonly wishService: WishService) {}
 
+  @Roles()
   @Query(() => GetWishType)
   getWishList() {
     return this.wishService.findAll();
   }
+
+  @Roles()
   @Query(() => Wish, { nullable: true })
   wish(@Args('id', { type: () => String }) id: string) {
     return this.wishService.findOne(id);
   }
 
+  @Roles()
   @Mutation(() => Wish)
-  async createWish(@Args('createWishData') createWishData: CreateWishInput) {
-    const wish = await this.wishService.create(createWishData);
+  async createWish(
+    @Args('createWishData') createWishData: CreateWishInput,
+    @AuthUser() user: User,
+  ) {
+    const wish = await this.wishService.create({
+      ...createWishData,
+      userId: user.id,
+    } as CreateWishInput & { userId: string });
     pubSub.publish('wishAdded', {
       wishAdded: wish,
     });
     return wish;
   }
 
+  @Roles()
   @Mutation(() => Wish)
   async updateWish(
     @Args('id') id: string,
     @Args('updateWishData') updateWishData: CreateWishInput,
+    @AuthUser() user: User,
   ) {
+    if (user.id !== id && user.role !== RoleType.ADMIN) {
+      throw new MethodNotAllowedException(
+        `You can not update user with id: ${id}`,
+      );
+    }
     const wish = await this.wishService.update(id, updateWishData);
     pubSub.publish('wishUpdated', {
       wishUpdated: wish,
@@ -39,8 +60,17 @@ export class WishResolver {
     return wish;
   }
 
+  @Roles()
   @Mutation(() => Boolean)
-  async deleteWish(@Args('id', { type: () => String }) id: string) {
+  async deleteWish(
+    @Args('id', { type: () => String }) id: string,
+    @AuthUser() user: User,
+  ) {
+    if (user.id !== id && user.role !== RoleType.ADMIN) {
+      throw new MethodNotAllowedException(
+        `You can not delete user with id: ${id}`,
+      );
+    }
     await this.wishService.delete(id).then(() => true);
     pubSub.publish('wishDeleted', {
       wishDeleted: id,
@@ -48,6 +78,7 @@ export class WishResolver {
     return true;
   }
 
+  @Roles()
   @Subscription(() => Wish, {
     name: 'wishAdded',
   })
@@ -55,6 +86,7 @@ export class WishResolver {
     return pubSub.asyncIterator('wishAdded');
   }
 
+  @Roles()
   @Subscription(() => Wish, {
     name: 'wishUpdated',
   })
@@ -62,6 +94,7 @@ export class WishResolver {
     return pubSub.asyncIterator('wishUpdated');
   }
 
+  @Roles()
   @Subscription(() => String, {
     name: 'wishDeleted',
   })

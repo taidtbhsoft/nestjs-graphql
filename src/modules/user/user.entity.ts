@@ -9,9 +9,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Wish } from '../wish/wish.entity';
 
 const BCRYPT_HASH_ROUNDS = 10;
 
@@ -36,6 +38,9 @@ export class User {
 
   @Column({ type: 'enum', enum: RoleType, default: RoleType.USER })
   role!: RoleType;
+
+  @OneToMany(() => Wish, (wishEntity) => wishEntity.user)
+  wishes?: Wish[];
 
   @Field(() => Date)
   @CreateDateColumn({

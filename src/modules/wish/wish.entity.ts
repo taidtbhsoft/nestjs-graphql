@@ -4,9 +4,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { User } from '../user/user.entity';
 
 @ObjectType()
 @Entity()
@@ -18,6 +21,17 @@ export class Wish {
   @Field(() => String)
   @Column({ nullable: true })
   content: string;
+
+  @Field(() => String)
+  @Column({ nullable: false, type: 'uuid' })
+  userId: string;
+
+  @ManyToOne(() => User, (userEntity) => userEntity.wishes, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'userId' })
+  user!: User;
 
   @Field(() => Date)
   @CreateDateColumn({

@@ -91,4 +91,5 @@ type Wish {
   createdAt: DateTime!
   id: ID!
   updatedAt: DateTime!
+  userId: String!
 }
