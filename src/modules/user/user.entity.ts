@@ -64,9 +64,15 @@ export class User {
 }
 
 @ObjectType()
-export class GetUserType {
-  @Field(() => [User], { nullable: true })
-  data?: User[];
+export class UserDto extends User {
+  @Field(() => Number, { nullable: true, defaultValue: 0 })
+  wishCount?: number;
+}
+
+@ObjectType()
+export class GetUserList {
+  @Field(() => [UserDto], { nullable: true })
+  data?: UserDto[];
 
   @Field(() => Number, { nullable: true })
   count?: number;

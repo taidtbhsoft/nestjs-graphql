@@ -26,6 +26,7 @@ export class Wish {
   @Column({ nullable: false, type: 'uuid' })
   userId: string;
 
+  @Field(() => User)
   @ManyToOne(() => User, (userEntity) => userEntity.wishes, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

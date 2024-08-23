@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 
 import { Repository } from 'typeorm';
-import { GetUserType, User } from './user.entity';
+import { GetUserList, User } from './user.entity';
 import { CreateUserInput, UpdateUserInput } from './dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -17,8 +17,16 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  async findAll(): Promise<GetUserType> {
-    const [data = [], count = 0] = await this.userRepository.findAndCount();
+  async findAll(): Promise<GetUserList> {
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .loadRelationCountAndMap('user.wishCount', 'user.wishes', 'wish');
+
+    const [data = [], count = 0] = await Promise.all([
+      queryBuilder.getMany(),
+      queryBuilder.getCount(),
+    ]);
+
     return { data, count };
   }
 

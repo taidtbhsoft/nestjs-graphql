@@ -17,12 +17,17 @@ export class WishService {
   ) {}
 
   async findAll(): Promise<GetWishType> {
-    const [data = [], count = 0] = await this.wishRepository.findAndCount();
+    const [data = [], count = 0] = await this.wishRepository.findAndCount({
+      relations: ['user'],
+    });
     return { data, count };
   }
 
   findOne(id: string): Promise<Wish> {
-    return this.wishRepository.findOneBy({ id });
+    return this.wishRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
   }
 
   async create(input: CreateWishInput): Promise<Wish> {

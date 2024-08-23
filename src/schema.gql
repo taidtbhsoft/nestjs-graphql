@@ -18,9 +18,9 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type GetUserType {
+type GetUserList {
   count: Float
-  data: [User!]
+  data: [UserDto!]
 }
 
 type GetWishType {
@@ -50,7 +50,7 @@ type Mutation {
 }
 
 type Query {
-  getUserList: GetUserType!
+  getUserList: GetUserList!
   getWishList: GetWishType!
   user(id: String!): User
   wish(id: String!): Wish
@@ -86,10 +86,20 @@ type User {
   username: String!
 }
 
+type UserDto {
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+  updatedAt: DateTime!
+  username: String!
+  wishCount: Float
+}
+
 type Wish {
   content: String!
   createdAt: DateTime!
   id: ID!
   updatedAt: DateTime!
+  user: User!
   userId: String!
 }

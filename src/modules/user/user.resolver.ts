@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
-import { GetUserType, User } from './user.entity';
+import { GetUserList, User } from './user.entity';
 import { UserService } from './user.service';
 import { CreateUserInput, UpdateUserInput } from './dto/user.dto';
 import { AuthUser, Roles } from '../../common/decorators/roles.decorators';
@@ -12,7 +12,7 @@ export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Roles([])
-  @Query(() => GetUserType)
+  @Query(() => GetUserList)
   getUserList() {
     return this.userService.findAll();
   }
