@@ -14,7 +14,8 @@ export const initDB = [
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true, // Use only in development, remove in production!
       autoLoadEntities: true,
-      logging: true,
+      logging:
+        configService.get('ENABLE_ORM_LOGS')?.toLocaleLowerCase() == 'true',
     }),
     inject: [ConfigService],
   }),

@@ -9,7 +9,10 @@ import { PostgreSqlContainer } from '@testcontainers/postgresql';
 import { initializeTransactionalContext } from 'typeorm-transactional';
 
 import { AppModule } from '@src/app.module';
-
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { faker } from '@faker-js/faker';
+import { RoleType } from '@src/common/constants/role-type';
+import { JwtService } from '@nestjs/jwt';
 let app: INestApplication;
 
 export async function initTest(): Promise<INestApplication> {
@@ -50,4 +53,33 @@ export async function initTest(): Promise<INestApplication> {
   );
 
   return app.init();
+}
+
+export async function getService(service) {
+  return await app.get(service);
+}
+
+export async function createDataMock(data = [], entity) {
+  const repo = await app.get(getRepositoryToken(entity));
+  return await repo.save(data.map((item) => repo.create(item)));
+}
+
+export function createRandomUser() {
+  const firstName = faker.person.firstName();
+  const lastName = faker.person.lastName();
+  const email = faker.internet.email({ firstName, lastName });
+  const password = 'password';
+  const username = faker.internet.userName();
+  const role = faker.helpers.enumValue(RoleType);
+  return {
+    email,
+    password,
+    username,
+    role,
+  };
+}
+
+export async function getToken(data) {
+  const jwtService = await getService(JwtService);
+  return jwtService.sign(data);
 }

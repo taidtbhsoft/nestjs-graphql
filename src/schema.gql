@@ -82,6 +82,7 @@ type User {
   createdAt: DateTime!
   email: String!
   id: ID!
+  role: RoleType!
   updatedAt: DateTime!
   username: String!
 }
@@ -90,6 +91,7 @@ type UserDto {
   createdAt: DateTime!
   email: String!
   id: ID!
+  role: RoleType!
   updatedAt: DateTime!
   username: String!
   wishCount: Float
