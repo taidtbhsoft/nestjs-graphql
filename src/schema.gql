@@ -5,7 +5,7 @@
 input CreateUserInput {
   email: String!
   password: String!
-  role: RoleType! = USER
+  role: RoleTypeScalar
   username: String!
 }
 
@@ -24,8 +24,8 @@ type GetUserList {
 }
 
 input GetWishListInput {
-  skip: String
-  take: String
+  skip: StringOrNumber
+  take: StringOrNumber
   userId: String
 }
 
@@ -73,6 +73,12 @@ enum RoleType {
   USER
 }
 
+"""A custom scalar that can be either a string or a RoleType"""
+scalar RoleTypeScalar
+
+"""A custom scalar that can be either a string or a number"""
+scalar StringOrNumber
+
 type Subscription {
   wishAdded: Wish!
   wishDeleted: String!
@@ -81,7 +87,7 @@ type Subscription {
 
 input UpdateUserInput {
   password: String
-  role: RoleType! = USER
+  role: RoleTypeScalar
 }
 
 type User {

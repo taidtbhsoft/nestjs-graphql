@@ -11,6 +11,8 @@ import { GraphQLError } from 'graphql';
 import { setHttpPlugin } from '@common/utils/graphql.helper';
 import { initDB } from '@common/config/database.config';
 import { WishModule } from '@modules/wish/wish.module';
+import { StringOrNumberScalar } from './common/scalars/stringOrNumber.scalars';
+import { RoleTypeScalar } from './common/scalars/roleType.scalars';
 
 @Module({
   imports: [
@@ -43,6 +45,6 @@ import { WishModule } from '@modules/wish/wish.module';
     WishModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, StringOrNumberScalar, RoleTypeScalar],
 })
 export class AppModule {}

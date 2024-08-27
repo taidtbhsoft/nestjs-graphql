@@ -9,6 +9,7 @@ import {
 } from 'class-validator';
 import { User } from '../user.entity';
 import { RoleType } from '../../../common/constants/role-type';
+import { RoleTypeScalar } from '@src/common/scalars/roleType.scalars';
 
 @InputType()
 export class CreateUserInput implements Partial<User> {
@@ -27,7 +28,7 @@ export class CreateUserInput implements Partial<User> {
   @IsEmail()
   email: string;
 
-  @Field(() => RoleType, { defaultValue: RoleType.USER })
+  @Field(() => RoleTypeScalar, { nullable: true })
   @IsOptional()
   role?: RoleType;
 }
@@ -38,7 +39,7 @@ export class UpdateUserInput implements Partial<User> {
   @IsOptional()
   password?: string;
 
-  @Field(() => RoleType, { defaultValue: RoleType.USER })
+  @Field(() => RoleTypeScalar, { nullable: true })
   @IsOptional()
   role?: RoleType;
 }

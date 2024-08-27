@@ -1,4 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
+import { StringOrNumberScalar } from '@src/common/scalars/stringOrNumber.scalars';
 
 import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
@@ -24,11 +25,11 @@ export class GetWishListInput {
   @IsOptional()
   userId?: string;
 
-  @Field(() => String || Number, { nullable: true })
+  @Field(() => StringOrNumberScalar, { nullable: true })
   @IsOptional()
   skip?: number;
 
-  @Field(() => String || Number, { nullable: true })
+  @Field(() => StringOrNumberScalar, { nullable: true })
   @IsOptional()
   take?: number;
 }
