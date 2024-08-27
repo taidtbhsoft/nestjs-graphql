@@ -1,6 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 
-import { IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
 @InputType()
 export class CreateWishInput {
@@ -16,4 +16,19 @@ export class WishIdInput {
   @Field(() => String)
   @IsNotEmpty()
   id: string;
+}
+
+@InputType()
+export class GetWishListInput {
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  userId?: string;
+
+  @Field(() => String || Number, { nullable: true })
+  @IsOptional()
+  skip?: number;
+
+  @Field(() => String || Number, { nullable: true })
+  @IsOptional()
+  take?: number;
 }

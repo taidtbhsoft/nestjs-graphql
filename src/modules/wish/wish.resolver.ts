@@ -2,7 +2,7 @@ import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
 
 import { GetWishType, Wish } from './wish.entity';
 import { WishService } from './wish.service';
-import { CreateWishInput } from './dto/wish.dto';
+import { CreateWishInput, GetWishListInput } from './dto/wish.dto';
 import { PubSub } from 'graphql-subscriptions';
 import { AuthUser, Roles } from '@src/common/decorators/roles.decorators';
 import { User } from '@modules/user/user.entity';
@@ -15,8 +15,19 @@ export class WishResolver {
 
   @Roles()
   @Query(() => GetWishType)
-  getWishList() {
-    return this.wishService.findAll();
+  getWishList(
+    @Args('getWishListInput', { nullable: true })
+    getWishListInput?: GetWishListInput | null,
+  ) {
+    const conditions = {
+      take: getWishListInput.take,
+      skip: getWishListInput.skip,
+      where: {},
+    };
+    if (getWishListInput.userId) {
+      conditions.where = { userId: getWishListInput.userId };
+    }
+    return this.wishService.findAll(conditions);
   }
 
   @Roles()

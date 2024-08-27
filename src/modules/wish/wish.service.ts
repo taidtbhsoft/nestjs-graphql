@@ -16,9 +16,12 @@ export class WishService {
     private wishRepository: Repository<Wish>,
   ) {}
 
-  async findAll(): Promise<GetWishType> {
+  async findAll(conditions): Promise<GetWishType> {
     const [data = [], count = 0] = await this.wishRepository.findAndCount({
       relations: ['user'],
+      skip: conditions.skip,
+      take: conditions.take,
+      where: conditions.where,
     });
     return { data, count };
   }

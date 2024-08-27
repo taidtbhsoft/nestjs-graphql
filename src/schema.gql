@@ -23,6 +23,12 @@ type GetUserList {
   data: [UserDto!]
 }
 
+input GetWishListInput {
+  skip: String
+  take: String
+  userId: String
+}
+
 type GetWishType {
   count: Float
   data: [Wish!]
@@ -51,7 +57,7 @@ type Mutation {
 
 type Query {
   getUserList: GetUserList!
-  getWishList: GetWishType!
+  getWishList(getWishListInput: GetWishListInput): GetWishType!
   user(id: String!): User
   wish(id: String!): Wish
 }
