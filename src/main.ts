@@ -9,7 +9,7 @@ import {
 export async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: true,
-    logger: ['error', 'warn', 'log'],
+    logger: ['error', 'warn', 'log', 'debug'],
   });
 
   app.useGlobalPipes(

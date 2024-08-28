@@ -13,6 +13,8 @@ import { initDB } from '@common/config/database.config';
 import { WishModule } from '@modules/wish/wish.module';
 import { StringOrNumberScalar } from './common/scalars/stringOrNumber.scalars';
 import { RoleTypeScalar } from './common/scalars/roleType.scalars';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CleanUpTokensService } from './cron/cleanUpTokens.cron';
 
 @Module({
   imports: [
@@ -43,8 +45,14 @@ import { RoleTypeScalar } from './common/scalars/roleType.scalars';
     UserModule,
     AuthModule,
     WishModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
-  providers: [AppService, StringOrNumberScalar, RoleTypeScalar],
+  providers: [
+    AppService,
+    StringOrNumberScalar,
+    RoleTypeScalar,
+    CleanUpTokensService,
+  ],
 })
 export class AppModule {}

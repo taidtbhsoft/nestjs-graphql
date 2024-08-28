@@ -18,6 +18,10 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type GetTokenOutput {
+  token: String
+}
+
 type GetUserList {
   count: Float
   data: [UserDto!]
@@ -35,6 +39,7 @@ type GetWishType {
 }
 
 type LoginOutput {
+  refreshToken: String
   token: String
   user: User
 }
@@ -49,6 +54,8 @@ type Mutation {
   createWish(createWishData: CreateWishInput!): Wish!
   deleteUser(id: String!): Boolean!
   deleteWish(id: String!): Boolean!
+  getToken(refreshToken: String!): GetTokenOutput!
+  logOut(refreshToken: String!): Boolean!
   login(loginUserInput: LoginUserInput!): LoginOutput!
   register(registerUserInput: RegisterUserInput!): User!
   updateUser(id: String!, updateUserData: UpdateUserInput!): User!

@@ -23,4 +23,13 @@ export class LoginOutput {
 
   @Field(() => String, { nullable: true })
   token?: string;
+
+  @Field(() => String, { nullable: true })
+  refreshToken?: string;
+}
+
+@ObjectType()
+export class GetTokenOutput {
+  @Field(() => String, { nullable: true })
+  token?: string;
 }
