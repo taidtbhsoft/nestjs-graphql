@@ -1,10 +1,5 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import {
-  BadRequestException,
-  HttpStatus,
-  ValidationPipe,
-} from '@nestjs/common';
 
 export async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -12,20 +7,6 @@ export async function bootstrap() {
     logger: ['error', 'warn', 'log', 'debug'],
   });
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      errorHttpStatusCode: HttpStatus.BAD_REQUEST,
-      transform: true,
-      dismissDefaultMessages: true,
-      exceptionFactory: (errors) => {
-        const msg = errors
-          .map((error) => Object.values(error.constraints))
-          .flat();
-        return new BadRequestException(msg);
-      },
-    }),
-  );
   const port = process.env.PORT;
   const url = `localhost:${port}`;
 

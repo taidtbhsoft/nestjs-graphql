@@ -22,7 +22,8 @@ describe('UserController (e2e)', () => {
     });
     usersMock[0].role = RoleType.ADMIN;
     users = await createDataMock(usersMock, User);
-    token = await getToken({ id: users[0].id, username: users[0].userName });
+    const tokenData = await getToken(users[0]);
+    token = tokenData.token;
   });
   afterAll(() => app.close());
   describe('getUserList', () => {

@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Module,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ApolloDriverConfig, ApolloDriver } from '@nestjs/apollo';
@@ -15,6 +20,7 @@ import { StringOrNumberScalar } from './common/scalars/stringOrNumber.scalars';
 import { RoleTypeScalar } from './common/scalars/roleType.scalars';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CleanUpTokensService } from './cron/cleanUpTokens.cron';
+import { APP_PIPE } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -53,6 +59,23 @@ import { CleanUpTokensService } from './cron/cleanUpTokens.cron';
     StringOrNumberScalar,
     RoleTypeScalar,
     CleanUpTokensService,
+    {
+      provide: APP_PIPE,
+      useFactory: function (): ValidationPipe {
+        return new ValidationPipe({
+          whitelist: true,
+          errorHttpStatusCode: HttpStatus.BAD_REQUEST,
+          transform: true,
+          dismissDefaultMessages: true,
+          exceptionFactory: (errors) => {
+            const msg = errors
+              .map((error) => Object.values(error.constraints))
+              .flat();
+            return new BadRequestException(msg);
+          },
+        });
+      },
+    },
   ],
 })
 export class AppModule {}
