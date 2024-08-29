@@ -1,17 +1,14 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { initTest } from './init-testing-app';
-import { faker } from '@faker-js/faker';
+import { initTest } from './initTestingApp';
+import { createRandomUser } from './dataFactory';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
   const gql = '/graphql';
+  let { token = '', refreshToken = '' } = {};
   // Init mock data
-  const firstName = faker.person.firstName();
-  const lastName = faker.person.lastName();
-  const email = faker.internet.email({ firstName, lastName });
-  const password = 'password';
-  const username = faker.internet.userName();
+  const { username, password, email } = createRandomUser();
 
   beforeAll(async () => {
     app = await initTest();
@@ -137,6 +134,7 @@ describe('AuthController (e2e)', () => {
            mutation Login {
                 login(loginUserInput: { password: "${password}", username: "${username}" }) {
                     token
+                    refreshToken
                     user {
                         createdAt
                         email
@@ -150,8 +148,11 @@ describe('AuthController (e2e)', () => {
         })
         .expect(200)
         .expect((res) => {
-          expect(res.body.data.login).toHaveProperty('token');
-          expect(res.body.data.login.user).toMatchObject({
+          const resData = res.body.data.login;
+          token = resData.token;
+          refreshToken = resData.refreshToken;
+          expect(resData).toHaveProperty('token');
+          expect(resData.user).toMatchObject({
             username,
             email,
           });
@@ -199,6 +200,74 @@ describe('AuthController (e2e)', () => {
             `,
         })
         .expect(400);
+    });
+  });
+  describe('get New Access Token', () => {
+    it('should return new token', async () => {
+      const { body } = await request(app.getHttpServer())
+        .post(gql)
+        .send({
+          query: `
+            mutation GetToken {
+              getToken(refreshToken: "${refreshToken}") {
+                  token
+              }
+            }
+          `,
+        })
+        .expect(200);
+      token = body.data.getToken.token;
+      return expect(body.data.getToken).toHaveProperty('token');
+    });
+    it('fail with invalid token', () => {
+      return request(app.getHttpServer())
+        .post(gql)
+        .send({
+          query: `
+            mutation GetToken {
+              getToken(refreshToken: "${token}") {
+                  token
+              }
+            }
+          `,
+        })
+        .expect(401)
+        .expect((res) => {
+          expect(res.body.errors[0].statusCode).toEqual(401);
+        });
+    });
+  });
+
+  describe('log Out', () => {
+    it('should log Out', async () => {
+      const { body } = await request(app.getHttpServer())
+        .post(gql)
+        .set({ Authorization: 'Bearer ' + token })
+        .send({
+          query: `
+            mutation logOut {
+              logOut(refreshToken: "${refreshToken}")
+            }
+          `,
+        })
+        .expect(200);
+      return expect(body.data.logOut).toEqual(true);
+    });
+    it('fail with invalid token', () => {
+      return request(app.getHttpServer())
+        .post(gql)
+        .set({ Authorization: 'Bearer ' + refreshToken })
+        .send({
+          query: `
+            mutation logOut {
+              logOut(refreshToken: "${token}")
+            }
+          `,
+        })
+        .expect(401)
+        .expect((res) => {
+          expect(res.body.errors[0].statusCode).toEqual(401);
+        });
     });
   });
 });

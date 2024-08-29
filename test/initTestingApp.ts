@@ -5,8 +5,6 @@ import { initializeTransactionalContext } from 'typeorm-transactional';
 
 import { AppModule } from '@src/app.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { faker } from '@faker-js/faker';
-import { RoleType } from '@src/common/constants/role-type';
 import { JwtService } from '@nestjs/jwt';
 import { Tokens } from '@src/modules/auth/token.entity';
 import { User } from '@src/modules/user/user.entity';
@@ -44,21 +42,6 @@ export async function getService(service) {
 export async function createDataMock(data = [], entity) {
   const repo = await app.get(getRepositoryToken(entity));
   return await repo.save(data.map((item) => repo.create(item)));
-}
-
-export function createRandomUser() {
-  const firstName = faker.person.firstName();
-  const lastName = faker.person.lastName();
-  const email = faker.internet.email({ firstName, lastName });
-  const password = 'password';
-  const username = faker.internet.userName();
-  const role = faker.helpers.enumValue(RoleType);
-  return {
-    email,
-    password,
-    username,
-    role,
-  };
 }
 
 export async function getToken(

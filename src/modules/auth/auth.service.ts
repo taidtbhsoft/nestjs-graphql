@@ -55,7 +55,11 @@ export class AuthService {
   }
 
   async verifyToken(token: string, options?: JwtVerifyOptions): Promise<User> {
-    const decode = this.jwtService.verify(token, options);
+    let decode = null;
+    try {
+      decode = this.jwtService.verify(token, options);
+    } catch {}
+
     if (!decode) {
       throw new UnauthorizedException('Token invalid');
     }
@@ -86,6 +90,9 @@ export class AuthService {
     const user = await this.verifyToken(refreshToken, {
       secret: process.env.JWT_REFRESH_SECRET,
     });
+    // Remove old token create by payload refreshToken
+    this.tokenRepository.delete({ refreshToken, userId: user.id });
+
     const tokenData = { id: user.id, username: user.username };
     const token = this.jwtService.sign(tokenData);
     // Add new token not need async for speedup

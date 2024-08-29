@@ -40,7 +40,9 @@ export class User {
   @Column({ type: 'enum', enum: RoleType, default: RoleType.USER })
   role!: RoleType;
 
-  @OneToMany(() => Wish, (wishEntity) => wishEntity.user)
+  @OneToMany(() => Wish, (wishEntity) => wishEntity.user, {
+    cascade: true,
+  })
   wishes?: Wish[];
 
   @Field(() => Date)

@@ -1,14 +1,14 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import {
-  initTest,
-  createDataMock,
-  createRandomUser,
-  getToken,
-} from './init-testing-app';
-import { faker } from '@faker-js/faker';
+import { initTest, createDataMock, getToken } from './initTestingApp';
 import { User } from '@src/modules/user/user.entity';
 import { RoleType } from '@src/common/constants/role-type';
+import {
+  createDataList,
+  createRandomUser,
+  createRandomWish,
+} from './dataFactory';
+import { Wish } from '@src/modules/wish/wish.entity';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;
@@ -17,10 +17,11 @@ describe('UserController (e2e)', () => {
   let token = '';
   beforeAll(async () => {
     app = await initTest();
-    const usersMock = faker.helpers.multiple(createRandomUser, {
-      count: 5,
-    });
+    const usersMock = createDataList(createRandomUser, 5) as Partial<User[]>;
     usersMock[0].role = RoleType.ADMIN;
+    usersMock[0].wishes = createDataList(createRandomWish, 5) as Partial<
+      Wish[]
+    >;
     users = await createDataMock(usersMock, User);
     const tokenData = await getToken(users[0]);
     token = tokenData.token;
