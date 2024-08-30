@@ -73,7 +73,7 @@ export class AuthService {
       }),
     ]);
 
-    if (!tokenData || tokenData.isRevoked) {
+    if (!tokenData) {
       throw new UnauthorizedException('Token invalid');
     }
     if (!user) {
@@ -109,13 +109,8 @@ export class AuthService {
   }
 
   async logOut(refreshToken: string, userId: string): Promise<boolean> {
-    this.tokenRepository.update(
-      {
-        refreshToken,
-        userId,
-      },
-      { isRevoked: true },
-    );
+    // Remove old token create by payload refreshToken
+    this.tokenRepository.delete({ refreshToken, userId });
     return true;
   }
 

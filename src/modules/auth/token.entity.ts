@@ -27,10 +27,6 @@ export class Tokens {
   @Column({ nullable: false })
   userId: string;
 
-  @Field(() => Boolean)
-  @Column({ default: false })
-  isRevoked: boolean;
-
   @Field(() => Number)
   @Column({ nullable: false, type: 'bigint' })
   expToken: number;
